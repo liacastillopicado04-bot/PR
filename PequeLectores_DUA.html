@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PequeLectores · Juegos de prelectura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF9F1;
+  --panel:#FFFFFF;
+  --ink:#263238;
+  --muted:#607D8B;
+  --purple:#7C6CF2;
+  --purple-soft:#EEEAFE;
+  --blue:#4DB6E5;
+  --blue-soft:#E8F7FD;
+  --green:#61C98B;
+  --green-soft:#EAF9F0;
+  --yellow:#FFD166;
+  --yellow-soft:#FFF6D8;
+  --coral:#FF8B7B;
+  --coral-soft:#FFF0ED;
+  --shadow:0 12px 30px rgba(60,72,88,.12);
+  --radius:24px;
+  --font-scale:1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Poppins",system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, #fff1cf 0 100px, transparent 101px),
+    radial-gradient(circle at 90% 8%, #e9e5ff 0 110px, transparent 111px),
+    var(--bg);
+  font-size:calc(16px * var(--font-scale));
+}
+button{font:inherit}
+.app{max-width:1180px;margin:0 auto;padding:22px}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(255,255,255,.92);padding:14px 18px;border-radius:22px;
+  box-shadow:var(--shadow);position:sticky;top:10px;z-index:20;backdrop-filter:blur(10px)
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:52px;height:52px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;font-size:28px
+}
+.brand h1{font-size:1.2rem;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:.88rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.icon-btn{
+  border:0;border-radius:14px;padding:10px 13px;background:#F5F6FA;color:var(--ink);
+  cursor:pointer;font-weight:700;min-width:44px
+}
+.icon-btn:hover,.icon-btn:focus{outline:3px solid #dcd7ff}
+.hero{
+  margin:28px 0 18px;padding:28px;border-radius:32px;
+  background:linear-gradient(135deg,#fff,#f8f5ff 55%,#eefaff);
+  box-shadow:var(--shadow);display:grid;grid-template-columns:1.5fr .8fr;gap:20px;align-items:center
+}
+.hero h2{font-size:clamp(1.8rem,4vw,3.3rem);line-height:1.05;margin:0 0 10px}
+.hero p{color:var(--muted);font-size:1.04rem;max-width:760px}
+.hero-art{font-size:76px;text-align:center}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.badge{padding:8px 11px;border-radius:999px;background:#fff;border:2px solid #edf0f4;font-size:.82rem;font-weight:700}
+.game-picker{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}
+.game-card{
+  border:0;text-align:left;padding:22px;border-radius:28px;background:var(--panel);
+  box-shadow:var(--shadow);cursor:pointer;transition:.18s;position:relative;overflow:hidden
+}
+.game-card:hover{transform:translateY(-3px)}
+.game-card.active{outline:4px solid var(--purple)}
+.game-card .num{font-size:.78rem;font-weight:800;color:var(--muted)}
+.game-card h3{font-size:1.35rem;margin:8px 0}
+.game-card p{margin:0;color:var(--muted)}
+.game-card .emoji{font-size:44px;position:absolute;right:20px;top:18px}
+.section{
+  display:none;background:#fff;border-radius:30px;padding:24px;box-shadow:var(--shadow);margin:18px 0 28px
+}
+.section.active{display:block}
+.section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.section h2{margin:0 0 6px;font-size:1.55rem}.section .lead{color:var(--muted);margin:0}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.primary,.secondary,.success{
+  border:0;border-radius:16px;padding:12px 16px;font-weight:800;cursor:pointer
+}
+.primary{background:var(--purple);color:#fff}
+.secondary{background:#F0F2F6;color:var(--ink)}
+.success{background:var(--green);color:#fff}
+.primary:focus,.secondary:focus,.success:focus{outline:4px solid #d9d3ff}
+.story-box{
+  margin-top:18px;background:var(--purple-soft);border-radius:24px;padding:18px;border:2px solid #ded8ff
+}
+.story-box p{margin:0;line-height:1.65}
+.sequence{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px
+}
+.seq-card{
+  user-select:none;background:#fff;border:3px solid #e8ebf0;border-radius:20px;padding:12px;
+  text-align:center;cursor:grab;min-height:170px;display:flex;flex-direction:column;justify-content:center;gap:8px
+}
+.seq-card.dragging{opacity:.45}.seq-card.selected{outline:4px solid var(--blue)}
+.picture{font-size:62px}.seq-card strong{font-size:.95rem}
+.feedback{
+  min-height:54px;margin-top:16px;border-radius:18px;padding:12px 16px;display:flex;align-items:center;
+  background:#F7F8FA;font-weight:700
+}
+.feedback.good{background:var(--green-soft);color:#23623A}
+.feedback.try{background:var(--yellow-soft);color:#795C00}
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px}
+.word-list,.image-list{display:grid;gap:12px}
+.match-item{
+  border:3px solid #E7EAF0;background:#fff;border-radius:18px;padding:14px;cursor:pointer;
+  text-align:center;font-weight:800;min-height:68px;display:grid;place-items:center;transition:.15s
+}
+.match-item:hover{transform:scale(1.01)}
+.match-item.selected{border-color:var(--purple);background:var(--purple-soft)}
+.match-item.matched{border-color:var(--green);background:var(--green-soft);cursor:default}
+.match-item.wrong{animation:shake .25s}
+.img-item{font-size:46px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.progress{
+  height:16px;background:#EEF1F4;border-radius:999px;overflow:hidden;margin-top:14px
+}
+.progress > div{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:.3s}
+.tip{
+  margin-top:18px;padding:16px;border-radius:20px;background:var(--blue-soft);color:#24566b
+}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:18px}
+.dot{width:13px;height:13px;border-radius:50%;background:#d9dee5}.dot.done{background:var(--green)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 0 28px}
+.access-note{font-size:.8rem;color:var(--muted);margin-top:10px}
+@media(max-width:850px){
+  .hero{grid-template-columns:1fr}.hero-art{display:none}
+  .game-picker,.match-wrap{grid-template-columns:1fr}
+  .sequence{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  .app{padding:12px}.topbar{align-items:flex-start;flex-direction:column}
+  .sequence{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+}
+.high-contrast{
+  --bg:#fff;--panel:#fff;--ink:#000;--muted:#1f1f1f;--purple:#3a2cc5;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">📚</div>
+      <div>
+        <h1>PequeLectores</h1>
+        <p>Jugamos, escuchamos y aprendemos.</p>
+      </div>
+    </div>
+    <div class="tools" aria-label="Herramientas de accesibilidad">
+      <button class="icon-btn" id="smaller" aria-label="Disminuir tamaño de texto">A−</button>
+      <button class="icon-btn" id="bigger" aria-label="Aumentar tamaño de texto">A+</button>
+      <button class="icon-btn" id="contrast" aria-label="Cambiar contraste">◐</button>
+      <button class="icon-btn" id="readPage" aria-label="Leer instrucciones principales">🔊</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h2>Dos juegos para preparar el camino hacia la lectura y la escritura ✨</h2>
+      <p>Este recurso trabaja comprensión oral, secuenciación, vocabulario, asociación palabra–imagen, atención y memoria. Las actividades pueden resolverse escuchando, observando y tocando.</p>
+      <div class="badges">
+        <span class="badge">👂 Apoyo auditivo</span>
+        <span class="badge">👀 Apoyo visual</span>
+        <span class="badge">🖐️ Interacción simple</span>
+        <span class="badge">💬 Retroalimentación positiva</span>
+      </div>
+    </div>
+    <div class="hero-art">🧒🏽🧩👧🏻</div>
+  </section>
+
+  <div class="game-picker">
+    <button class="game-card active" data-target="game1">
+      <div class="emoji">🖼️</div>
+      <div class="num">JUEGO 1</div>
+      <h3>Ordena el cuento</h3>
+      <p>Escucha una historia y acomoda las imágenes en el orden correcto.</p>
+    </button>
+    <button class="game-card" data-target="game2">
+      <div class="emoji">🔤</div>
+      <div class="num">JUEGO 2</div>
+      <h3>Palabra e imagen</h3>
+      <p>Relaciona cada palabra con la imagen que representa.</p>
+    </button>
+  </div>
+
+  <section class="section active" id="game1">
+    <div class="section-head">
+      <div>
+        <h2>🖼️ Juego 1 · Ordena el cuento</h2>
+        <p class="lead">Escucha el cuento. Luego mueve las imágenes hasta dejar primero lo que ocurrió al inicio y al final lo que ocurrió de último.</p>
+      </div>
+      <div class="actions">
+        <button class="primary" id="listenStory">🔊 Escuchar cuento</button>
+        <button class="secondary" id="listenGame1">👂 Escuchar instrucción</button>
+      </div>
+    </div>
+
+    <div class="story-box">
+      <p id="storyText"><strong>El paseo de Luna:</strong> Luna se puso sus botas amarillas. Después salió al jardín y encontró una mariposa. Luego regó una pequeña flor roja. Al final, regresó a casa y tomó una taza de chocolate.</p>
+    </div>
+
+    <div class="sequence" id="sequence" aria-label="Imágenes para ordenar">
+      <div class="seq-card" draggable="true" data-order="3" tabindex="0"><div class="picture">🌷💧</div><strong>Regó la flor</strong></div>
+      <div class="seq-card" draggable="true" data-order="1" tabindex="0"><div class="picture">🥾🟡</div><strong>Se puso las botas</strong></div>
+      <div class="seq-card" draggable="true" data-order="4" tabindex="0"><div class="picture">🏠☕</div><strong>Volvió a casa</strong></div>
+      <div class="seq-card" draggable="true" data-order="2" tabindex="0"><div class="picture">🦋🌿</div><strong>Encontró una mariposa</strong></div>
+    </div>
+
+    <div class="actions" style="margin-top:16px">
+      <button class="success" id="checkSequence">✅ Revisar</button>
+      <button class="secondary" id="resetSequence">↻ Mezclar otra vez</button>
+    </div>
+    <div class="feedback" id="seqFeedback" aria-live="polite">Cuando esté listo, pulse “Revisar”.</div>
+    <div class="tip"><strong>Apoyo DUA:</strong> las tarjetas pueden ordenarse arrastrando con el mouse o seleccionando dos tarjetas para intercambiar su posición.</div>
+  </section>
+
+  <section class="section" id="game2">
+    <div class="section-head">
+      <div>
+        <h2>🔤 Juego 2 · Palabra e imagen</h2>
+        <p class="lead">Pulse una palabra y luego la imagen que corresponde. También puede escuchar cada palabra.</p>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="listenGame2">👂 Escuchar instrucción</button>
+        <button class="secondary" id="resetMatch">↻ Reiniciar</button>
+      </div>
+    </div>
+
+    <div class="progress" aria-label="Progreso"><div id="progressBar"></div></div>
+
+    <div class="match-wrap">
+      <div>
+        <h3>Palabras</h3>
+        <div class="word-list" id="wordList">
+          <button class="match-item word" data-key="sol">☀️ <span>sol</span> <span aria-hidden="true">🔊</span></button>
+          <button class="match-item word" data-key="gato">🐾 <span>gato</span> <span aria-hidden="true">🔊</span></button>
+          <button class="match-item word" data-key="casa">🏡 <span>casa</span> <span aria-hidden="true">🔊</span></button>
+          <button class="match-item word" data-key="flor">🌼 <span>flor</span> <span aria-hidden="true">🔊</span></button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Imágenes</h3>
+        <div class="image-list" id="imageList">
+          <button class="match-item img-item" data-key="flor" aria-label="Imagen de una flor">🌼</button>
+          <button class="match-item img-item" data-key="casa" aria-label="Imagen de una casa">🏠</button>
+          <button class="match-item img-item" data-key="sol" aria-label="Imagen del sol">☀️</button>
+          <button class="match-item img-item" data-key="gato" aria-label="Imagen de un gato">🐱</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="feedback" id="matchFeedback" aria-live="polite">Seleccione una palabra para comenzar.</div>
+    <div class="dots" aria-hidden="true">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <div class="tip"><strong>Apoyo DUA:</strong> se presenta la palabra escrita, una pista visual y lectura en voz alta para ofrecer múltiples formas de representación.</div>
+  </section>
+
+  <footer>
+    Recurso pensado para estudiantes de preparatoria o transición. Puede utilizarse con acompañamiento docente o familiar.
+  </footer>
+</div>
+
+<script>
+const synth = window.speechSynthesis;
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'es-CR';
+  u.rate = 0.88;
+  u.pitch = 1.06;
+  const voices = synth.getVoices();
+  const preferred = voices.find(v => /es(-|_)?(CR|MX|ES|US)/i.test(v.lang)) || voices.find(v => v.lang.startsWith('es'));
+  if(preferred) u.voice = preferred;
+  synth.speak(u);
+}
+
+document.getElementById('readPage').onclick=()=>speak(
+  'Bienvenido a PequeLectores. Hay dos juegos. En el primero escuchará un cuento y ordenará imágenes. En el segundo relacionará cada palabra con su imagen.'
+);
+
+let scale=1;
+document.getElementById('bigger').onclick=()=>{scale=Math.min(1.35,scale+.1);document.documentElement.style.setProperty('--font-scale',scale)};
+document.getElementById('smaller').onclick=()=>{scale=Math.max(.9,scale-.1);document.documentElement.style.setProperty('--font-scale',scale)};
+document.getElementById('contrast').onclick=()=>document.body.classList.toggle('high-contrast');
+
+document.querySelectorAll('.game-card').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.game-card').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.target).classList.add('active');
+    document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+document.getElementById('listenStory').onclick=()=>speak(document.getElementById('storyText').innerText);
+document.getElementById('listenGame1').onclick=()=>speak('Escucha el cuento. Luego acomoda las imágenes desde lo que pasó primero hasta lo que pasó al final. Puedes arrastrarlas o tocar dos tarjetas para intercambiarlas.');
+document.getElementById('listenGame2').onclick=()=>speak('Selecciona una palabra y luego selecciona la imagen que representa esa palabra.');
+
+const seq=document.getElementById('sequence');
+let dragged=null, selectedCard=null;
+
+function bindSequence(){
+  seq.querySelectorAll('.seq-card').forEach(card=>{
+    card.addEventListener('dragstart',()=>{dragged=card;card.classList.add('dragging')});
+    card.addEventListener('dragend',()=>{dragged=null;card.classList.remove('dragging')});
+    card.addEventListener('dragover',e=>e.preventDefault());
+    card.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(!dragged || dragged===card) return;
+      const nodes=[...seq.children];
+      const a=nodes.indexOf(dragged), b=nodes.indexOf(card);
+      if(a<b) seq.insertBefore(dragged,card.nextSibling); else seq.insertBefore(dragged,card);
+    });
+    card.addEventListener('click',()=>{
+      if(!selectedCard){
+        selectedCard=card; card.classList.add('selected');
+        speak(card.innerText);
+      }else if(selectedCard===card){
+        card.classList.remove('selected'); selectedCard=null;
+      }else{
+        const nodes=[...seq.children];
+        const a=nodes.indexOf(selectedCard), b=nodes.indexOf(card);
+        const marker=document.createElement('span');
+        seq.insertBefore(marker,selectedCard);
+        seq.insertBefore(selectedCard,card);
+        seq.insertBefore(card,marker);
+        marker.remove();
+        selectedCard.classList.remove('selected'); selectedCard=null;
+      }
+    });
+  });
+}
+bindSequence();
+
+function shuffleSequence(){
+  const items=[...seq.children];
+  for(let i=items.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [items[i],items[j]]=[items[j],items[i]];
+  }
+  items.forEach(x=>seq.appendChild(x));
+  document.getElementById('seqFeedback').className='feedback';
+  document.getElementById('seqFeedback').textContent='Cuando esté listo, pulse “Revisar”.';
+}
+document.getElementById('resetSequence').onclick=shuffleSequence;
+document.getElementById('checkSequence').onclick=()=>{
+  const ok=[...seq.children].every((x,i)=>Number(x.dataset.order)===i+1);
+  const fb=document.getElementById('seqFeedback');
+  if(ok){
+    fb.className='feedback good';
+    fb.textContent='🌟 ¡Excelente! Ordenaste el cuento correctamente.';
+    speak('Excelente. Ordenaste el cuento correctamente.');
+  }else{
+    fb.className='feedback try';
+    fb.textContent='💛 Casi. Escucha el cuento otra vez y piensa: ¿qué ocurrió primero?';
+    speak('Casi. Escucha el cuento otra vez y piensa qué ocurrió primero.');
+  }
+};
+
+let selectedWord=null, matched=0;
+const words=[...document.querySelectorAll('.word')];
+const imgs=[...document.querySelectorAll('.img-item')];
+const dots=[...document.querySelectorAll('.dot')];
+const matchFb=document.getElementById('matchFeedback');
+
+words.forEach(w=>{
+  w.addEventListener('click',()=>{
+    if(w.classList.contains('matched')) return;
+    words.forEach(x=>x.classList.remove('selected'));
+    selectedWord=w; w.classList.add('selected');
+    speak(w.dataset.key);
+    matchFb.className='feedback';
+    matchFb.textContent='Ahora seleccione la imagen de: '+w.dataset.key+'.';
+  });
+});
+
+imgs.forEach(img=>{
+  img.addEventListener('click',()=>{
+    if(img.classList.contains('matched')) return;
+    if(!selectedWord){
+      matchFb.className='feedback try';
+      matchFb.textContent='Primero seleccione una palabra.';
+      speak('Primero selecciona una palabra.');
+      return;
+    }
+    if(img.dataset.key===selectedWord.dataset.key){
+      img.classList.add('matched');
+      selectedWord.classList.add('matched');
+      selectedWord.classList.remove('selected');
+      matched++;
+      dots[matched-1].classList.add('done');
+      document.getElementById('progressBar').style.width=(matched/4*100)+'%';
+      matchFb.className='feedback good';
+      matchFb.textContent=matched===4?'🎉 ¡Terminaste! Relacionaste todas las palabras.':'⭐ ¡Muy bien! Esa pareja es correcta.';
+      speak(matched===4?'Muy bien. Terminaste el juego.':'Muy bien. Esa pareja es correcta.');
+      selectedWord=null;
+    }else{
+      img.classList.add('wrong');
+      setTimeout(()=>img.classList.remove('wrong'),300);
+      matchFb.className='feedback try';
+      matchFb.textContent='💛 Intenta de nuevo. Escucha la palabra y observa las imágenes.';
+      speak('Intenta de nuevo. Escucha la palabra y observa las imágenes.');
+    }
+  });
+});
+
+document.getElementById('resetMatch').onclick=()=>{
+  selectedWord=null;matched=0;
+  words.forEach(x=>x.classList.remove('selected','matched','wrong'));
+  imgs.forEach(x=>x.classList.remove('selected','matched','wrong'));
+  dots.forEach(x=>x.classList.remove('done'));
+  document.getElementById('progressBar').style.width='0%';
+  matchFb.className='feedback';
+  matchFb.textContent='Seleccione una palabra para comenzar.';
+};
+</script>
+</body>
+</html>
